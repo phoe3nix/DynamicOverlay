@@ -18,7 +18,20 @@ struct MapApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MapRootView()
+			NavigationView {
+				NavigationLink("link") {
+					EmptyBlah()
+				}
+			}
+//            MapRootView()
         }
     }
+}
+
+struct EmptyBlah: View {
+
+	var body: some View {
+		MapRootView()
+//		Text("Hi")
+	}
 }

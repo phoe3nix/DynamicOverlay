@@ -1,0 +1,246 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
+// swift-module-flags: -target arm64-apple-ios10-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name OverlayContainer
+import CoreGraphics
+import Foundation
+@_exported import OverlayContainer
+import Swift
+import UIKit
+import _Concurrency
+public protocol OverlayContainerTransitionContext {
+  var isDragging: Swift.Bool { get }
+  var velocity: CoreGraphics.CGPoint { get }
+  var overlayTranslationHeight: CoreGraphics.CGFloat { get }
+  var notchIndexes: Swift.Range<Swift.Int> { get }
+  var reachableIndexes: [Swift.Int] { get }
+  func height(forNotchAt index: Swift.Int) -> CoreGraphics.CGFloat
+}
+extension OverlayContainer.OverlayContainerTransitionContext {
+  public func minimumReachableHeight() -> CoreGraphics.CGFloat
+  public func maximumReachableHeight() -> CoreGraphics.CGFloat
+  public func minimumHeight() -> CoreGraphics.CGFloat
+  public func maximumHeight() -> CoreGraphics.CGFloat
+}
+public protocol OverlayContainerTransitionCoordinatorContext : OverlayContainer.OverlayContainerTransitionContext {
+  var isAnimated: Swift.Bool { get }
+  var isCancelled: Swift.Bool { get }
+  var targetTranslationHeight: CoreGraphics.CGFloat { get }
+}
+public protocol OverlayContainerTransitionCoordinator : OverlayContainer.OverlayContainerTransitionCoordinatorContext {
+  func animate(alongsideTransition animation: ((OverlayContainer.OverlayContainerTransitionCoordinatorContext) -> Swift.Void)?, completion: ((OverlayContainer.OverlayContainerTransitionCoordinatorContext) -> Swift.Void)?)
+}
+extension OverlayContainer.OverlayContainerTransitionCoordinatorContext {
+  public func translationProgress() -> CoreGraphics.CGFloat
+  public func overallTranslationProgress() -> CoreGraphics.CGFloat
+}
+extension OverlayContainer.OverlayContainerViewControllerDelegate {
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, transitioningDelegateForOverlay overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTransitioningDelegate?
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, scrollViewDrivingOverlay overlayViewController: UIKit.UIViewController) -> UIKit.UIScrollView?
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, shouldStartDraggingOverlay overlayViewController: UIKit.UIViewController, at point: CoreGraphics.CGPoint, in coordinateSpace: UIKit.UICoordinateSpace) -> Swift.Bool
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, overlayTranslationFunctionForOverlay overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTranslationFunction?
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, didMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willStartDraggingOverlay overlayViewController: UIKit.UIViewController)
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willEndDraggingOverlay overlayViewController: UIKit.UIViewController, atVelocity velocity: CoreGraphics.CGPoint)
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willTranslateOverlay overlayViewController: UIKit.UIViewController, transitionCoordinator: OverlayContainer.OverlayContainerTransitionCoordinator)
+  public func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, canReachNotchAt index: Swift.Int, forOverlay overlayViewController: UIKit.UIViewController) -> Swift.Bool
+}
+public protocol OverlayContainerContextTargetNotchPolicy : OverlayContainer.OverlayContainerTransitionContext {
+  var overlayViewController: UIKit.UIViewController { get }
+}
+public protocol OverlayContainerContextTransitioning : OverlayContainer.OverlayContainerTransitionContext {
+  var overlayViewController: UIKit.UIViewController { get }
+  var targetNotchIndex: Swift.Int { get }
+  var targetNotchHeight: CoreGraphics.CGFloat { get }
+}
+public protocol OverlayTransitioningDelegate : AnyObject {
+  func overlayTargetNotchPolicy(for overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTranslationTargetNotchPolicy?
+  func animationController(for overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayAnimatedTransitioning?
+}
+public protocol OverlayTranslationTargetNotchPolicy {
+  func targetNotchIndex(using context: OverlayContainer.OverlayContainerContextTargetNotchPolicy) -> Swift.Int
+}
+public protocol OverlayAnimatedTransitioning {
+  func interruptibleAnimator(using context: OverlayContainer.OverlayContainerContextTransitioning) -> UIKit.UIViewImplicitlyAnimating
+}
+extension OverlayContainer.OverlayTransitioningDelegate {
+  public func overlayTargetNotchPolicy(for overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTranslationTargetNotchPolicy?
+  public func animationController(for overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayAnimatedTransitioning?
+}
+@objc @_Concurrency.MainActor(unsafe) open class OverlayContainerSheetPresentationController : OverlayContainer.OverlayContainerPresentationController {
+  @_Concurrency.MainActor(unsafe) weak open var sheetDelegate: OverlayContainer.OverlayContainerSheetPresentationControllerDelegate?
+  @_Concurrency.MainActor(unsafe) open var dimmingView: OverlayContainer.OverlayContainerSheetDimmingView? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) open var dismissingTapGestureRecognizer: UIKit.UITapGestureRecognizer {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public init(dimmingView: OverlayContainer.OverlayContainerSheetDimmingView? = TransparentOverlayContainerSheetDimmingView(), presentedViewController: UIKit.UIViewController, presenting: UIKit.UIViewController?)
+  @_Concurrency.MainActor(unsafe) override open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willTranslateOverlay overlayViewController: UIKit.UIViewController, transitionCoordinator: OverlayContainer.OverlayContainerTransitionCoordinator)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func presentationTransitionWillBegin()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func dismissalTransitionWillBegin()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func presentationTransitionDidEnd(_ completed: Swift.Bool)
+  @objc deinit
+}
+extension OverlayContainer.OverlayContainerSheetPresentationControllerDelegate {
+  public func overlayContainerSheetPresentationControllerShouldDismissOnTap(_ presentationController: OverlayContainer.OverlayContainerSheetPresentationController) -> Swift.Bool
+  public func overlayContainerSheetDismissalPolicy(for presentationController: OverlayContainer.OverlayContainerSheetPresentationController) -> OverlayContainer.OverlayContainerSheetDismissalPolicy
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class OverlayContainerPresentationController : UIKit.UIPresentationController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func presentationTransitionWillBegin()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func dismissalTransitionDidEnd(_ completed: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willStartDraggingOverlay overlayViewController: UIKit.UIViewController)
+  @_Concurrency.MainActor(unsafe) open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willEndDraggingOverlay overlayViewController: UIKit.UIViewController, atVelocity velocity: CoreGraphics.CGPoint)
+  @_Concurrency.MainActor(unsafe) open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, didMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  @_Concurrency.MainActor(unsafe) open func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willTranslateOverlay overlayViewController: UIKit.UIViewController, transitionCoordinator: OverlayContainer.OverlayContainerTransitionCoordinator)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(presentedViewController: UIKit.UIViewController, presenting presentingViewController: UIKit.UIViewController?)
+  @objc deinit
+}
+public class RushingForwardTargetNotchPolicy : OverlayContainer.OverlayTranslationTargetNotchPolicy {
+  public var minimumVelocity: CoreGraphics.CGFloat
+  public var minimumDuration: CoreGraphics.CGFloat
+  public init()
+  public func targetNotchIndex(using context: OverlayContainer.OverlayContainerContextTargetNotchPolicy) -> Swift.Int
+  @objc deinit
+}
+public protocol OverlayContainerSheetDimmingView : UIKit.UIView {
+  func presentationTransitionWillBegin()
+  func presentationTransitionDidBegin()
+  func dismissalTransitionWillBegin()
+  func dismissalTransitionDidBegin()
+  func overlayViewControllerWillTranslate(context: OverlayContainer.OverlayContainerTransitionCoordinatorContext)
+}
+extension OverlayContainer.OverlayContainerSheetDimmingView {
+  public func presentationTransitionWillBegin()
+  public func presentationTransitionDidBegin()
+  public func dismissalTransitionWillBegin()
+  public func dismissalTransitionDidBegin()
+  public func overlayViewControllerWillTranslate(context: OverlayContainer.OverlayContainerTransitionCoordinatorContext)
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class TransparentOverlayContainerSheetDimmingView : UIKit.UIView, OverlayContainer.OverlayContainerSheetDimmingView {
+  @_Concurrency.MainActor(unsafe) open var dismissedAlpha: CoreGraphics.CGFloat
+  @_Concurrency.MainActor(unsafe) open var minimumAlpha: CoreGraphics.CGFloat
+  @_Concurrency.MainActor(unsafe) open var maximumAlpha: CoreGraphics.CGFloat
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreGraphics.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) open func presentationTransitionWillBegin()
+  @_Concurrency.MainActor(unsafe) open func presentationTransitionDidBegin()
+  @_Concurrency.MainActor(unsafe) public func dismissalTransitionDidBegin()
+  @_Concurrency.MainActor(unsafe) public func overlayViewControllerWillTranslate(context: OverlayContainer.OverlayContainerTransitionCoordinatorContext)
+  @objc deinit
+}
+public protocol OverlayTranslationParameters {
+  var minimumHeight: CoreGraphics.CGFloat { get }
+  var maximumHeight: CoreGraphics.CGFloat { get }
+  var translation: CoreGraphics.CGFloat { get }
+}
+public protocol OverlayTranslationFunction {
+  func overlayTranslationHeight(using parameters: OverlayContainer.OverlayTranslationParameters) -> CoreGraphics.CGFloat
+}
+public protocol OverlayContainerSheetDismissalPolicyContext : OverlayContainer.OverlayContainerTransitionContext {
+  var targetTranslationHeight: CoreGraphics.CGFloat { get }
+}
+public protocol OverlayContainerSheetDismissalPolicy {
+  func shouldDismiss(using context: OverlayContainer.OverlayContainerSheetDismissalPolicyContext) -> Swift.Bool
+}
+public struct ThresholdOverlayContainerSheetDismissalPolicy : OverlayContainer.OverlayContainerSheetDismissalPolicy {
+  public enum Position {
+    case none
+    case notch(index: Swift.Int)
+    case translationHeight(CoreGraphics.CGFloat)
+  }
+  public enum Velocity {
+    case none
+    case value(CoreGraphics.CGFloat)
+  }
+  public var dismissingVelocity: OverlayContainer.ThresholdOverlayContainerSheetDismissalPolicy.Velocity
+  public var dismissingPosition: OverlayContainer.ThresholdOverlayContainerSheetDismissalPolicy.Position
+  public init(dismissingVelocity: OverlayContainer.ThresholdOverlayContainerSheetDismissalPolicy.Velocity = .value(2400.0), dismissingPosition: OverlayContainer.ThresholdOverlayContainerSheetDismissalPolicy.Position = .notch(index: 0))
+  public func shouldDismiss(using context: OverlayContainer.OverlayContainerSheetDismissalPolicyContext) -> Swift.Bool
+}
+public protocol OverlayContainerSheetPresentationControllerDelegate : AnyObject {
+  func overlayContainerSheetDismissalPolicy(for presentationController: OverlayContainer.OverlayContainerSheetPresentationController) -> OverlayContainer.OverlayContainerSheetDismissalPolicy
+  func overlayContainerSheetPresentationControllerShouldDismissOnTap(_ presentationController: OverlayContainer.OverlayContainerSheetPresentationController) -> Swift.Bool
+}
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class PassThroughView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func hitTest(_ point: CoreGraphics.CGPoint, with event: UIKit.UIEvent?) -> UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreGraphics.CGRect)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+public class SpringOverlayTranslationAnimationController : OverlayContainer.OverlayAnimatedTransitioning {
+  public var mass: CoreGraphics.CGFloat
+  public var damping: CoreGraphics.CGFloat
+  public var response: CoreGraphics.CGFloat
+  public init()
+  public init(style: OverlayContainer.OverlayContainerViewController.OverlayStyle)
+  public func interruptibleAnimator(using context: OverlayContainer.OverlayContainerContextTransitioning) -> UIKit.UIViewImplicitlyAnimating
+  @objc deinit
+}
+@objc @_Concurrency.MainActor(unsafe) open class OverlayContainerViewController : UIKit.UIViewController {
+  public enum OverlayStyle {
+    case flexibleHeight
+    case rigid
+    case expandableHeight
+    public static func == (a: OverlayContainer.OverlayContainerViewController.OverlayStyle, b: OverlayContainer.OverlayContainerViewController.OverlayStyle) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  @_Concurrency.MainActor(unsafe) weak open var delegate: OverlayContainer.OverlayContainerViewControllerDelegate? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var viewControllers: [UIKit.UIViewController] {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var topViewController: UIKit.UIViewController? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open var childForStatusBarStyle: UIKit.UIViewController? {
+    @_Concurrency.MainActor(unsafe) @objc get
+  }
+  @_Concurrency.MainActor(unsafe) weak open var drivingScrollView: UIKit.UIScrollView? {
+    get
+    set
+  }
+  @_Concurrency.MainActor(unsafe) open var availableSpace: CoreGraphics.CGFloat {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) final public let style: OverlayContainer.OverlayContainerViewController.OverlayStyle
+  @_Concurrency.MainActor(unsafe) public init(style: OverlayContainer.OverlayContainerViewController.OverlayStyle = .expandableHeight)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewWillLayoutSubviews()
+  @_Concurrency.MainActor(unsafe) open func moveOverlay(toNotchAt index: Swift.Int, animated: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  @_Concurrency.MainActor(unsafe) open func invalidateNotchHeights()
+  @objc deinit
+}
+public class RubberBandOverlayTranslationFunction : OverlayContainer.OverlayTranslationFunction {
+  public var factor: CoreGraphics.CGFloat
+  public var bouncesAtMaximumHeight: Swift.Bool
+  public var bouncesAtMinimumHeight: Swift.Bool
+  public init()
+  public func overlayTranslationHeight(using context: OverlayContainer.OverlayTranslationParameters) -> CoreGraphics.CGFloat
+  @objc deinit
+}
+public protocol OverlayContainerViewControllerDelegate : AnyObject {
+  func numberOfNotches(in containerViewController: OverlayContainer.OverlayContainerViewController) -> Swift.Int
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, heightForNotchAt index: Swift.Int, availableSpace: CoreGraphics.CGFloat) -> CoreGraphics.CGFloat
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, scrollViewDrivingOverlay overlayViewController: UIKit.UIViewController) -> UIKit.UIScrollView?
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, shouldStartDraggingOverlay overlayViewController: UIKit.UIViewController, at point: CoreGraphics.CGPoint, in coordinateSpace: UIKit.UICoordinateSpace) -> Swift.Bool
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willStartDraggingOverlay overlayViewController: UIKit.UIViewController)
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willEndDraggingOverlay overlayViewController: UIKit.UIViewController, atVelocity velocity: CoreGraphics.CGPoint)
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, didMoveOverlay overlayViewController: UIKit.UIViewController, toNotchAt index: Swift.Int)
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, willTranslateOverlay overlayViewController: UIKit.UIViewController, transitionCoordinator: OverlayContainer.OverlayContainerTransitionCoordinator)
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, overlayTranslationFunctionForOverlay overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTranslationFunction?
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, transitioningDelegateForOverlay overlayViewController: UIKit.UIViewController) -> OverlayContainer.OverlayTransitioningDelegate?
+  func overlayContainerViewController(_ containerViewController: OverlayContainer.OverlayContainerViewController, canReachNotchAt index: Swift.Int, forOverlay overlayViewController: UIKit.UIViewController) -> Swift.Bool
+}
+extension OverlayContainer.OverlayContainerViewController.OverlayStyle : Swift.Equatable {}
+extension OverlayContainer.OverlayContainerViewController.OverlayStyle : Swift.Hashable {}
