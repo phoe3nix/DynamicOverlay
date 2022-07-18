@@ -39,8 +39,8 @@ struct OverlayContainerDynamicOverlayView<Background: View, Content: View>: View
         .overlayContent(content.overlayCoordinateSpace())
         .onUpdate {
 //			DispatchQueue.main.async {
-//				self.passiveContainer.onTranslation = self.behavior.block
-//				self.passiveContainer.onNotchChange = { self.behavior.binding?.wrappedValue = $0 }
+				self.passiveContainer.onTranslation = self.behavior.block
+				self.passiveContainer.onNotchChange = { self.behavior.binding?.wrappedValue = $0 }
 //			}
         }
         .onDragAreaChange {
